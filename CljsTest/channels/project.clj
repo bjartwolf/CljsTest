@@ -7,4 +7,5 @@
   :plugins [[lein-cljsbuild "0.3.2"]]
   :cljsbuild {:builds [{:source-paths ["src"]
                         :compiler {:output-to "..\\js\\channels.js"
+								   :optimizations :simple
                                    :pretty-print false}}]})

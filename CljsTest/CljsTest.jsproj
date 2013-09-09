@@ -56,6 +56,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <Content Include="channels\project.clj" />
+    <Content Include="channels\README.md" />
     <Content Include="channels\src\channel.cljs" />
     <Content Include="default.html" />
     <Content Include="images\logo.scale-100.png" />
