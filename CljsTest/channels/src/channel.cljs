@@ -13,7 +13,7 @@
   (let [beb (chan)
         acc (chan)
         accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)]
-	  (set! accelerometer.-reportInterval 100)
+	  (set! accelerometer.-reportInterval 10)
       (.addEventListener accelerometer "readingchanged" (fn [meter] 
            (go (>! acc (.-reading.accelerationX meter)))))
       (go 
@@ -27,6 +27,5 @@
            (set! (.-innerText (sel1 :#timer)) x)
            (recur (+ x 1))))
      (go
-       (loop [x 1]
-			(<! beb)
-			(recur (+ x 1))))))
+       (while true
+			(<! beb)))))
