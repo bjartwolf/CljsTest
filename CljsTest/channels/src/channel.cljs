@@ -1,6 +1,6 @@
 (ns channel
   (:use-macros [dommy.macros :only [sel sel1]])
-  (:require [dommy.core] [dommy.attrs] [dommy.utils] [cljs.core.async :as async :refer [<! >! chan close! timeout]])
+  (:require [cljs.core.async :as async :refer [<! >! chan close! timeout]])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 (defn greet [n]
   (str "Hello you" n))
