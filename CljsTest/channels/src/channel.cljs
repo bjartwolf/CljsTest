@@ -1,36 +1,40 @@
 (ns channel
   (:use-macros [dommy.macros :only [sel sel1]])
-  (:require [cljs.core.async :as async :refer [<! >! chan close! timeout]])
+  (:require [cljs.core.async :as async :refer [<! >! chan sliding-buffer close! timeout]])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 (defn greet [n]
-  (str "Hello you" n))
+  (str "Hello you" n)) 
 
 (.define WinJS.UI.Pages "/default.html" (clj->js {"ready" (fn [element, options] 
        (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
-       (let [acc (chan)
+       (let [acc (chan (sliding-buffer 1))
             pointer (chan)
             accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)
+            minimumReportInterval (.-minimumReportInterval accelerometer)
             inkManager (Windows.UI.Input.Inking.InkManager.)
             inkCanvas (sel1 :#inkCanvas)
             inkContext (.getContext inkCanvas "2d")]
-	        (set! accelerometer.-reportInterval 10)
-            ; seems this gets lost if no event is recieved. or something
-            (.addEventListener inkCanvas "MSPointerDown" (fn [evt] 
+	        (set! accelerometer.-ReportInterval minimumReportInterval)
+(.addEventListener accelerometer "readingchanged" (fn [meter] 
+                (go (>! acc (.toFixed (.-reading.accelerationX meter) 2)))))            
+(.addEventListener inkCanvas "MSPointerDown" (fn [evt] 
                 (go (>! pointer "PointerDown"))))     
-              (go 
-                    (while true
-                        (let [x (<! pointer)]
-                             (set! (.-innerText (sel1 :#acceleration)) "Pointer down"))))      
-            (.addEventListener accelerometer "readingchanged" (fn [meter] 
-                (go (>! acc (.-reading.accelerationX meter)))))           
-            (test acc)))}))
+            (.addEventListener inkCanvas "MSPointerUp" (fn [evt] 
+                (go (>! pointer "PointerUp"))))  
+            (.addEventListener inkCanvas "MSPointerMove" (fn [evt] 
+                (go (>! pointer "PointerMove"))))  
+            (go 
+                (while true
+                    (let [x (<! pointer)]
+                       (set! (.-innerText (sel1 :#move)) x))))      
+            (go 
+                (while true
+                    (let [x (<! acc)]
+                    (set! (.-innerText (sel1 :#acceleration)) x))))
+            (test)))}))
 
-(defn test [acc]
+(defn test []
   (let [beb (chan)]
-      (go 
-        (while true
-            (let [x (<! acc)]
-                 (set! (.-innerText (sel1 :#acceleration)) x))))
      (go
        (loop [x 1]
            (<! (timeout 1000))
