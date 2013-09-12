@@ -19,16 +19,14 @@
       (go 
         (while true
             (let [x (<! acc)]
-                 (set! (.-innerText (sel1 :#acceleration)) x)
-                 (.log js/console x))))
+                 (set! (.-innerText (sel1 :#acceleration)) x))))
      (go
        (loop [x 1]
-           (<! (timeout 2000))
+           (<! (timeout 1000))
            (>! beb "hello")
-		   (.log js/console x)
            (set! (.-innerText (sel1 :#timer)) x)
            (recur (+ x 1))))
      (go
        (loop [x 1]
-			(.log js/console (<! beb))
+			(<! beb)
 			(recur (+ x 1))))))
