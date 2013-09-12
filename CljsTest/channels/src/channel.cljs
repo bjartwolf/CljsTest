@@ -8,8 +8,13 @@
 (.define WinJS.UI.Pages "/default.html" (clj->js {"ready" (fn [element, options] 
        (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
        (let [acc (chan)
-            accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)]
+            accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)
+            inkManager (Windows.UI.Input.Inking.InkManager.)
+            inkCanvas (sel1 :#inkCanvas)
+            inkContext (.getContext inkCanvas "2d")]
 	        (set! accelerometer.-reportInterval 10)
+            (.log js/%console inkContext)
+            ; seems this gets lost if no event is recieved. or something
             (.addEventListener accelerometer "readingchanged" (fn [meter] 
                 (go (>! acc (.-reading.accelerationX meter)))))           
             (test acc)))}))
