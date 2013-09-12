@@ -5,6 +5,9 @@
 (defn greet [n]
   (str "Hello you" n))
 
+(.define WinJS.UI.Pages "/default.html" (clj->js {ready (fn [element, options] 
+           (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
+           (test))}))
 
 (defn test []
   (let [beb (chan)]
