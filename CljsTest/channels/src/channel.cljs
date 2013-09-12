@@ -6,16 +6,16 @@
   (str "Hello you" n))
 
 (.define WinJS.UI.Pages "/default.html" (clj->js {"ready" (fn [element, options] 
-           (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
-           (test))}))
+       (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
+       (let [acc (chan)
+            accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)]
+	        (set! accelerometer.-reportInterval 10)
+            (.addEventListener accelerometer "readingchanged" (fn [meter] 
+                (go (>! acc (.-reading.accelerationX meter)))))           
+            (test acc)))}))
 
-(defn test []
-  (let [beb (chan)
-        acc (chan)
-        accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)]
-	  (set! accelerometer.-reportInterval 10)
-      (.addEventListener accelerometer "readingchanged" (fn [meter] 
-           (go (>! acc (.-reading.accelerationX meter)))))
+(defn test [acc]
+  (let [beb (chan)]
       (go 
         (while true
             (let [x (<! acc)]
