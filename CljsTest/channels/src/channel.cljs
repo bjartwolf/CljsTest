@@ -7,7 +7,13 @@
 
 (.define WinJS.UI.Pages "/default.html" (clj->js {"ready" (fn [element, options] 
            (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
+            ; skipped nullcheck
+            (let [accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)]
+	              (set! accelerometer.-reportInterval 00)
+                  (.addEventListener accelerometer "readingchanged" (fn [acc] 
+                       (.log js/console acc))))
            (test))}))
+
 
 (defn test []
   (let [beb (chan)]
