@@ -7,25 +7,30 @@
 
 (.define WinJS.UI.Pages "/default.html" (clj->js {"ready" (fn [element, options] 
            (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
-            ; skipped nullcheck
-            (let [accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)]
-	              (set! accelerometer.-reportInterval 00)
-                  (.addEventListener accelerometer "readingchanged" (fn [acc] 
-                       (.log js/console acc))))
            (test))}))
 
 
 (defn test []
-  (let [beb (chan)]
-      (go
+  (let [beb (chan)
+        acc (chan)
+        accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)]
+	  (set! accelerometer.-reportInterval 100)
+      (.addEventListener accelerometer "readingchanged" (fn [meter] 
+            (.log js/console "beb")
+           (go (>! acc (.-reading.accelerationX meter)))))
+      (go 
+        (while true
+            (let [x (<! acc)]
+                 (.log js/console x))))
+     (comment (go
        (loop [x 1]
-           (<! (timeout 200))
+           (<! (timeout 2000))
            (>! beb "hello")
 		   (.log js/console x)
            (set! (.-innerText (sel1 :#acceleration)) x)
            (.log js/console (sel1 :#acceleration))
-           (recur (+ x 1))))
-      (go
+           (recur (+ x 1)))))
+      (comment(go
        (loop [x 1]
 			(.log js/console (<! beb))
-			(recur (+ x 1))))))
+			(recur (+ x 1)))))))
