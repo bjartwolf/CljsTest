@@ -9,28 +9,26 @@
            (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
            (test))}))
 
-
 (defn test []
   (let [beb (chan)
         acc (chan)
         accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)]
 	  (set! accelerometer.-reportInterval 100)
       (.addEventListener accelerometer "readingchanged" (fn [meter] 
-            (.log js/console "beb")
            (go (>! acc (.-reading.accelerationX meter)))))
       (go 
         (while true
             (let [x (<! acc)]
+                 (set! (.-innerText (sel1 :#acceleration)) x)
                  (.log js/console x))))
-     (comment (go
+     (go
        (loop [x 1]
            (<! (timeout 2000))
            (>! beb "hello")
 		   (.log js/console x)
-           (set! (.-innerText (sel1 :#acceleration)) x)
-           (.log js/console (sel1 :#acceleration))
-           (recur (+ x 1)))))
-      (comment(go
+           (set! (.-innerText (sel1 :#timer)) x)
+           (recur (+ x 1))))
+     (go
        (loop [x 1]
 			(.log js/console (<! beb))
-			(recur (+ x 1)))))))
+			(recur (+ x 1))))))
