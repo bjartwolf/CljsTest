@@ -15,17 +15,6 @@
     <script src="/js/default.js"></script>
     <script src="/js/channels.js"></script>
     <script type="text/javascript">goog.require("channel");</script>
-    <script>
-        
-        (function () {
-            var page = WinJS.UI.Pages.define("/default.html", {
-                ready: function (element, options) {
-                    document.getElementById("timeout").innerHTML = channel.greet("ClojureScript");
-                    channel.test();
-                }
-            });
-        })();
-    </script>
 
 </head>
 <body>
