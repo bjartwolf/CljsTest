@@ -22,7 +22,8 @@
 
 
 (def pointer (chan (sliding-buffer 1))) 
-
+(def xs (chan (sliding-buffer 1)))
+ 
 (.define WinJS.UI.Pages "/default.html" (clj->js {"ready" (fn [element, options] 
        (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
        (let [inkManager (Windows.UI.Input.Inking.InkManager.)
@@ -33,13 +34,15 @@
             (.addEventListener inkCanvas "MSPointerUp" (fn [evt] 
                 (put! pointer "PointerUp")))  
             (.addEventListener inkCanvas "MSPointerMove" (fn [evt] 
-                (put! pointer "PointerMove")))  
-            (go 
-                (while true
+                (put! pointer "PointerMove")
+                (put! xs (.-currentPoint.rawPosition.x evt))))  
+            (go (while true
+                    (let [x (<! xs)]
+                        (set! (.-innerText (sel1 :#xs)) x))))
+            (go (while true
                     (let [x (<! acc)]
-                        (set! (.-innerText (sel1 :#acceleration)) x))))
-            (go 
-                (while true
+                        (set! (.-innerText (sel1 :#acceleration)) x))))            
+           (go (while true
                     (let [x (<! pointer)]
                        (set! (.-innerText (sel1 :#move)) x))))      
             (test)))}))
