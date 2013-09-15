@@ -1,6 +1,7 @@
 (ns channel
   (:use-macros [dommy.macros :only [sel sel1]])
-  (:require [cljs.core.async :as async :refer [<! >! put! chan dropping-buffer sliding-buffer close! timeout]])
+  (:require [cljs.core.async :as async :refer [<! >! put! chan dropping-buffer sliding-buffer close! timeout]]
+   [dommy.core :as dommy])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 (defn greet [n]
   (str "Hello ragnhild " n)) 
@@ -38,9 +39,12 @@
                 (put! xs (.-currentPoint.rawPosition.x evt))))  
             (go (while true
                     (let [x (<! xs)]
-                      f  (set! (.-innerText (sel1 :#xs)) x))))
+                     (set! (.-innerText (sel1 :#xs)) x))))
             (go (while true
-                    (let [x (<! acc)]
+                    (let [x (<! acc)
+                         bredde (.-width (sel1 :#T))]
+                        (dommy/set-style! (sel1 :#T) :height "10.0px")
+                        (.log js/console bredde)
                         (set! (.-innerText (sel1 :#acceleration)) x))))            
             (go (while true
                     (let [x (<! pointer)]
