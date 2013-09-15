@@ -4,16 +4,16 @@
    [dommy.core :as dommy])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 (defn greet [n]
-  (str "Hello ragnhild " n)) 
-(defn test []
+  (str "Hello Tuva " n)) 
+
+(defn run-timer []
      (go
        (loop [x 1]
            (<! (timeout 1000))
            (set! (.-innerText (sel1 :#timer)) x)
            (recur (+ x 1)))))
 
-
-(def acc (chan (dropping-buffer 100000)))
+(def acc (chan (dropping-buffer 10)))
 
 (let [accelerometer (.getDefault Windows.Devices.Sensors.Accelerometer)
            minimumReportInterval (.-minimumReportInterval accelerometer)]
@@ -41,13 +41,13 @@
                     (let [x (<! xs)]
                      (set! (.-innerText (sel1 :#xs)) x))))
             (go (while true
-                    (let [x (<! acc)
-                         bredde (.-width (sel1 :#T))]
-                        (dommy/set-style! (sel1 :#T) :height "10.0px")
-                        (.log js/console bredde)
+                    (let [x (* 100 (<! acc))
+                         T (sel1 :#T)
+                         bredde (.-width T)]
+                        ;save
+                        (dommy/set-style! T :width (str (- bredde x)"px"))
                         (set! (.-innerText (sel1 :#acceleration)) x))))            
             (go (while true
                     (let [x (<! pointer)]
                        (set! (.-innerText (sel1 :#move)) x))))      
-            (test)))}))
-
+            (run-timer)))}))
