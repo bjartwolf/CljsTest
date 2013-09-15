@@ -3,7 +3,7 @@
   (:require [cljs.core.async :as async :refer [<! >! put! chan dropping-buffer sliding-buffer close! timeout]])
   (:require-macros [cljs.core.async.macros :as m :refer [go alt!]]))
 (defn greet [n]
-  (str "Hello you" n)) 
+  (str "Hello ragnhild " n)) 
 (defn test []
      (go
        (loop [x 1]
@@ -25,7 +25,7 @@
 (def xs (chan (sliding-buffer 1)))
  
 (.define WinJS.UI.Pages "/default.html" (clj->js {"ready" (fn [element, options] 
-       (set! (.-innerText (sel1 :#timeout)) (greet "Clojurescript"))
+       (set! (.-innerText (sel1 :#timeout)) (greet "sier hei"))
        (let [inkManager (Windows.UI.Input.Inking.InkManager.)
              inkCanvas (sel1 :#inkCanvas)
              inkContext (.getContext inkCanvas "2d")]
@@ -38,11 +38,11 @@
                 (put! xs (.-currentPoint.rawPosition.x evt))))  
             (go (while true
                     (let [x (<! xs)]
-                        (set! (.-innerText (sel1 :#xs)) x))))
+                      f  (set! (.-innerText (sel1 :#xs)) x))))
             (go (while true
                     (let [x (<! acc)]
                         (set! (.-innerText (sel1 :#acceleration)) x))))            
-           (go (while true
+            (go (while true
                     (let [x (<! pointer)]
                        (set! (.-innerText (sel1 :#move)) x))))      
             (test)))}))
